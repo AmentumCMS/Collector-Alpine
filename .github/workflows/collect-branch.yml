@@ -10,7 +10,7 @@ on:
 
 jobs:
   Date:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     outputs:
       Date: ${{ steps.date.outputs.date }}
     steps:
@@ -35,14 +35,14 @@ jobs:
 
   Collect-APKs:
     needs: [Date]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
       WORKDIR: /mnt/${{vars.COLLECTOR }}
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Environment
         run: |
@@ -147,8 +147,8 @@ jobs:
           echo "Done"
 
   Release:
-    runs-on: ubuntu-24.04
-    needs: [Date, Collect-APKs, Sharepoint]
+    runs-on: ubuntu-latest
+    needs: [Date, Collect-APKs]
     permissions:
       contents: write
       pull-requests: read
@@ -156,10 +156,10 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           pattern: "*.iso.*"
