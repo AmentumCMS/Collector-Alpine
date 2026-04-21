@@ -78,7 +78,7 @@ jobs:
         run: df -h ${{ env.WORKDIR }}
 
       # - name: Upload reposync log
-      #   uses: actions/upload-artifact@v4
+      #   uses: actions/upload-artifact@v7
       #   with:
       #     name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.log
       #     path: ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}.log
@@ -101,7 +101,7 @@ jobs:
           cp -v ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt ${{ vars.COLLECTOR }}
 
       - name: Upload ISO ToC artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
           path: ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
@@ -130,7 +130,7 @@ jobs:
         run: ls -sS1h ${{ env.WORKDIR }}/*.iso*
 
       - name: Upload ISO files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
           path: ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*
