@@ -40,8 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      WORKDIR: /mnt/${{vars.COLLECTOR }}
-
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
@@ -54,38 +52,38 @@ jobs:
 
       - name: Run Collection for ${{ vars.COLLECTOR }}
         run: |
-          sudo mkdir -vp ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}
-          sudo chown -R $USER ${{ env.WORKDIR }}
-          cd ${{ env.WORKDIR }}
+          sudo mkdir -vp ${{ vars.COLLECTOR }}
+          sudo chown -R $USER ${{ vars.COLLECTOR }}
+          cd ${{ vars.COLLECTOR }}
           echo "Collecting ${{ vars.COLLECTOR }} APKs"
           # Rsync only the latest version and selected repos/arch
           ${{ github.workspace }}/scripts/rsync-alpine.sh
+          cd ${{ github.workspace }}
 
       - name: Show Files
-        run: ls -Alht ${{ env.WORKDIR }}
+        run: ls -Alht ${{ vars.COLLECTOR }}
 
       - name: List disks
-        run: df -h ${{ env.WORKDIR }}
+        run: df -h ${{ vars.COLLECTOR }}
 
       # - name: Upload reposync log
       #   uses: actions/upload-artifact@v7
       #   with:
       #     name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.log
-      #     path: ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}.log
+      #     path: ${{ vars.COLLECTOR }}/${{ vars.COLLECTOR }}.log
       #     if-no-files-found: error
 
       - name: Show Consumption
         run: |
-          echo -e "Disk Usage:\n$(du -chs ${{ env.WORKDIR }})\n"
-          echo -e "Disk Space:\n$(df -h ${{ env.WORKDIR }})\n"
-          echo -e "File Listing:\n$(ls -alhS ${{ env.WORKDIR }}*)\n"
+          echo -e "Disk Usage:\n$(du -chs ${{ vars.COLLECTOR }})\n"
+          echo -e "Disk Space:\n$(df -h ${{ vars.COLLECTOR }})\n"
+          echo -e "File Listing:\n$(ls -alhS ${{ vars.COLLECTOR }}*)\n"
 
       - name: Copy README to ${{ vars.COLLECTOR }} ISO
-        run: cp -v README.md ${{ env.WORKDIR }}
+        run: cp -v README.md ${{ vars.COLLECTOR }}
 
       - name: ISO Table of contents
         run: |
-          cd ${{ env.WORKDIR }}
           tree ${{ vars.COLLECTOR }} \
           | tee ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
           cp -v ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt ${{ vars.COLLECTOR }}
@@ -94,13 +92,12 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
-          path: ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
           if-no-files-found: error
 
       - name: Make ${{ vars.COLLECTOR }} ISO
         run: |
           echo "Making ISO of ${{ vars.COLLECTOR }}"
-          cd ${{ env.WORKDIR }}
           mkisofs -J -R -v -T -l \
             -V ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }} \
             -A ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }} \
@@ -108,22 +105,21 @@ jobs:
             ${{ vars.COLLECTOR }}
 
       - name: Implant MD5 sum into ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
-        run: implantisomd5 ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
 
       - name: Generate ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso Hash
         run: |
-          cd ${{ env.WORKDIR }}
           sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso \
           | tee ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Show ISO Files
-        run: ls -sS1h ${{ env.WORKDIR }}/*.iso*
+        run: ls -sS1h *.iso*
 
       - name: Upload ISO files
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
-          path: ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*
           if-no-files-found: error
 
       # Cleanup
@@ -184,5 +180,4 @@ jobs:
           make_latest: true
           files: |
             *.iso.*
-
 # Upload to Sharepoint Job
