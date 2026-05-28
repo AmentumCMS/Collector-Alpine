@@ -54,6 +54,7 @@ jobs:
         run: |
           sudo mkdir -vp ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}
           sudo chown -R $USER ${{ env.WORKDIR }}
+          cd ${{ env.WORKDIR }}
           echo "Collecting ${{ vars.COLLECTOR }} APKs"
           # Rsync only the latest version and selected repos/arch
           ${{ github.workspace }}/scripts/rsync-alpine.sh
