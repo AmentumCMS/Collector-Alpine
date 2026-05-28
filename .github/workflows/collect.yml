@@ -54,11 +54,11 @@ jobs:
 
       - name: Run Collection for ${{ vars.COLLECTOR }}
         run: |
-          sudo mkdir -p ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}
+          sudo mkdir -vp ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}
           sudo chown -R $USER ${{ env.WORKDIR }}
           echo "Collecting ${{ vars.COLLECTOR }} APKs"
           # Rsync only the latest version and selected repos/arch
-          ${{ env.WORKDIR }}/scripts/rsync-alpine.sh
+          ${{ github.workspace }}/scripts/rsync-alpine.sh
 
       - name: Show Files
         run: ls -Alht ${{ env.WORKDIR }}
