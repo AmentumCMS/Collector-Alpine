@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$VERSION" ]; then
-  VERSION=v3.22.1
+  VERSION=v3.23.4
   echo "VERSION environment variable is not set. Defaulting to $VERSION."
 else
   echo "Using VERSION: $VERSION"
