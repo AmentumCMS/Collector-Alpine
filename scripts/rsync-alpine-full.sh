@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ -z "$VERSION" ]; then
-  VERSION=v3.22.1
+  VERSION=v3.23
   echo "VERSION environment variable is not set. Defaulting to $VERSION."
 else
   echo "Using VERSION: $VERSION"
@@ -15,6 +15,7 @@ src="rsync://rsync.alpinelinux.org/alpine/"
 # Rsync only the latest version and selected repos/archs
 rsync \
   --archive \
+  --verbose \
   --update \
   --hard-links \
   --delete \
@@ -27,7 +28,7 @@ rsync \
   --include "$VERSION/community/" \
   --include "$VERSION/community/x86_64/***" \
   --exclude "*" \
-  "$src" "."
+  "$src/$VERSION" "."
 
 
   # --log-file "rsync.log" \
