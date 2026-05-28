@@ -1,5 +1,10 @@
 #!/bin/sh
-
+if [ -z "$VERSION" ]; then
+  VERSION=v3.22.1
+  echo "VERSION environment variable is not set. Defaulting to $VERSION."
+else
+  echo "Using VERSION: $VERSION"
+fi
 # Lock to prevent concurrent runs
 lockfile="/tmp/alpine-mirror.lock"
 [ -z "$flock" ] && exec env flock=1 flock -n $lockfile "$0" "$@"
@@ -16,16 +21,16 @@ rsync \
   --delete-after \
   --delay-updates \
   --timeout=600 \
-  --include "v3.22/" \
-  --include "v3.22/main/" \
-  --include "v3.22/main/x86_64/***" \
+  --include "$VERSION/" \
+  --include "$VERSION/main/" \
+  --include "$VERSION/main/x86_64/***" \
   --exclude "*" \
   "$src" "."
 
 
   # --log-file "rsync.log" \
-  # --include "v3.22/community/" \
-  # --include "v3.22/community/x86_64/" \
+  # --include "$VERSION/community/" \
+  # --include "$VERSION/community/x86_64/" \
   # --include "latest-stable/" \
   # --include "latest-stable/main/" \
   # --include "latest-stable/main/x86_64/" \
