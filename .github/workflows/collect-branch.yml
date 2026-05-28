@@ -136,6 +136,7 @@ jobs:
           rm -rfv ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
           echo "Done"
 
+# Create Release
   Release:
     runs-on: ubuntu-latest
     needs: [Date, Collect-APKs]
@@ -159,7 +160,7 @@ jobs:
 
       # Section to actually create a release
 
-  # Upload to Sharepoint Job
+# Upload to Sharepoint Job
   Sharepoint:
     runs-on: ubuntu-latest
     needs: [Date, Collect-APKs]

@@ -43,29 +43,16 @@ jobs:
         run: |
           echo "PATH=$PATH:$PWD/scripts" >> $GITHUB_ENV
           sudo apt-get update -y
-          sudo apt-get install -y mkisofs isomd5sum wget
+          sudo apt-get install -y mkisofs isomd5sum wget rsync tree
 
       - name: Run Collection for ${{ vars.COLLECTOR }}
         run: |
-          sudo mkdir -p ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}
+          sudo mkdir -vp ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}
           sudo chown -R $USER ${{ env.WORKDIR }}
           cd ${{ env.WORKDIR }}
           echo "Collecting ${{ vars.COLLECTOR }} APKs"
           # Rsync only the latest version and selected repos/arch
-          rsync -av \
-            --update \
-            --hard-links \
-            --delete \
-            --delete-after \
-            --delay-updates \
-            --timeout=600 \
-            --include "v3.22/" \
-            --include "v3.22/main/" \
-            --include "v3.22/main/x86_64/***" \
-            --include "v3.22/community/" \
-            --include "v3.22/community/x86_64/***" \
-            --exclude "*" \
-            rsync://rsync.alpinelinux.org/alpine ${{ env.WORKDIR }}/${{ vars.COLLECTOR }}
+          ${{ github.workspace }}/scripts/rsync-alpine.sh
 
       - name: Show Files
         run: ls -Alht ${{ env.WORKDIR }}
@@ -144,52 +131,9 @@ jobs:
           rm -rfv ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
           echo "Done"
 
-  # Release:
-  #   runs-on: ubuntu-latest
-  #   needs: [Date, Collect-APKs]
-  #   permissions:
-  #     contents: write
-  #     pull-requests: read
-  #   env:
-  #     GH_TOKEN: ${{ github.token }}
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v6
+# Create Release
 
-  #     - name: Download Artifacts
-  #       uses: actions/download-artifact@v8
-  #       with:
-  #         merge-multiple: true
-  #         pattern: "*.iso.*"
-
-  #     - name: Show Artifacts
-  #       run: ls -sS1h *.iso.*
-
-  #     # Section to actually create a release
-  #     - name: Set up git
-  #       run: |
-  #         git config user.name "$(git log -n 1 --pretty=format:%an)"
-  #         git config user.email "$(git log -n 1 --pretty=format:%ae)"
-
-  #     - name: Create tag
-  #       uses: rickstaa/action-create-tag@v1
-  #       id: tag_create
-  #       with:
-  #         tag: ${{ needs.Date.outputs.Date }}-Full
-  #         github_token: ${{secrets.GITHUB_TOKEN}}
-  #         tag_exists_error: false
-  #         message: "Release for ${{ needs.Date.outputs.Date }} Full run"
-
-  #     - name: Create Release
-  #       id: create_release
-  #       uses: softprops/action-gh-release@v2
-  #       with:
-  #         name: ${{ vars.COLLECTOR }}-Full ${{ needs.Date.outputs.Date }}
-  #         tag_name: ${{ needs.Date.outputs.Date }}-Full
-  #         make_latest: true
-  #         files: |
-  #           /mnt/*.iso.*
-  # Upload to Sharepoint Job
+# Upload to Sharepoint Job
   Sharepoint:
     runs-on: ubuntu-latest
     needs: [Date, Collect-APKs]
