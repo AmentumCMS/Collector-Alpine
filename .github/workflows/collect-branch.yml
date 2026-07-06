@@ -457,7 +457,9 @@ jobs:
           cd ${{ github.workspace }}
 
       - name: Show Files
-        run: ls -Alht ${{ vars.COLLECTOR }}
+        run: |
+          echo -e "Directory Listing for ${{ vars.COLLECTOR }}:\n$(ls -1Ssh ${{ vars.COLLECTOR }})"
+          echo -e "Consumption:\n$(du -chs ${{ vars.COLLECTOR }})"
 
       - name: List disks
         run: df -h ${{ vars.COLLECTOR }}
@@ -567,7 +569,7 @@ jobs:
 
       - name: Make ISO
         run: |
-          mkisofs -J -R -v -T -l \
+          mkisofs -J -R -v -T -l -udf -allow-limited-size \
             -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -A '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -o ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso \
