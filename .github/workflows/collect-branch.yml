@@ -1,5 +1,5 @@
-name: Alpine-APK-Collection (Branch)
-run-name: ${{ github.actor }} is Collecting Main APKs for ${{ github.ref_name }} 🚀
+name: Alpine Collection (Branch)
+run-name: ${{ github.actor }} is Collecting Alpine for ${{ github.ref_name }} 🚀
 on:
   push:
     branches-ignore:
@@ -71,22 +71,22 @@ jobs:
       - name: TARchive Skopeo Output
         run: |
           tar -cv -Ipigz --remove-files \
-            -f ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }} \
-          | tee ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz.txt
+            -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }} \
+          | tee ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: Generate Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz | tee \
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz | tee \
+            ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz.sha
 
       - name: List files 
-        run: ls -1sh ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz*
+        run: ls -1sh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: Upload TARchive, ToC, and hash
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz*
+          name: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz*
           if-no-files-found: error
 
   Code:
@@ -618,7 +618,7 @@ jobs:
 
   Sharepoint:
     runs-on: ubuntu-latest
-    needs: [Date, Collect-APKs]
+    needs: [Date, MakeISO]
     permissions:
       contents: write
       pull-requests: read
