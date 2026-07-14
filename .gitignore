@@ -36,7 +36,10 @@ build/
 *.code-workspace
 **/.vscode
 
+# Alpine Skopeo Target Directory
+**/Alpine/
 
+# Misc
 target
 lib
 inventory/
